@@ -10,6 +10,7 @@ type UserM struct {
 	Nickname string `gorm:"column:nickname"`
 	Email    string `gorm:"column:email"`
 	Phone    string `gorm:"column:phone"`
+	Gender   int8   `gorm:"column:gender"`
 }
 
 // TableName 用来指定映射的 MySQL 表名.

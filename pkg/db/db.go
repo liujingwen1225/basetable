@@ -55,5 +55,8 @@ func NewDbClient(opts *MySqlOptions) (*gorm.DB, error) {
 	// SetMaxIdleConns 设置空闲连接池的最大连接数
 	sqlDB.SetMaxIdleConns(opts.MaxIdleConnections)
 
+	//models := []interface{}{&model.UserM{}}
+	//db.AutoMigrate(models...)
+
 	return db, nil
 }

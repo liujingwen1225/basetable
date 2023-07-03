@@ -4,6 +4,7 @@ import (
 	"basetable.com/internal/basetable/store"
 	"basetable.com/internal/pkg/errno"
 	"basetable.com/internal/pkg/model"
+	"basetable.com/pkg/api"
 	v1 "basetable.com/pkg/api/basetable/v1"
 	"basetable.com/pkg/token"
 	"context"
@@ -14,6 +15,8 @@ import (
 type UserBiz interface {
 	Create(cxt context.Context, request *v1.CreateUserRequest) error
 	Login(cxt context.Context, request *v1.UserLoginRequest) (*v1.LoginResponse, error)
+	List(cxt context.Context, request *api.PageRequest) (*[]model.UserM, error)
+	Deleted(cxt context.Context, userIds int) error
 }
 
 var _ UserBiz = &userBiz{}
@@ -40,7 +43,7 @@ func (u *userBiz) Create(cxt context.Context, request *v1.CreateUserRequest) err
 
 func (u *userBiz) Login(cxt context.Context, request *v1.UserLoginRequest) (*v1.LoginResponse, error) {
 	userInput := &model.UserM{Username: request.Username}
-	user, err := u.ds.Users().Get(cxt, userInput)
+	user, err := u.ds.Users().GetOne(cxt, userInput)
 	if err != nil {
 		return nil, err
 	}
@@ -52,4 +55,13 @@ func (u *userBiz) Login(cxt context.Context, request *v1.UserLoginRequest) (*v1.
 		return nil, errno.ErrSignToken
 	}
 	return &v1.LoginResponse{Token: sign}, nil
+}
+
+func (u *userBiz) List(c context.Context, request *api.PageRequest) (*[]model.UserM, error) {
+	page, err := u.ds.Users().GetPage(c, request)
+	return page, err
+}
+
+func (u *userBiz) Deleted(c context.Context, userId int) error {
+	return u.ds.Users().Deleted(c, userId)
 }
