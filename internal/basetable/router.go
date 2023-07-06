@@ -31,9 +31,10 @@ func initRouter(g *gin.Engine) error {
 		userV1 := v1.Group("/users")
 		{
 			userV1.POST("", userController.Create)
+			userV1.GET("/:id", userController.GetOne)
 			//userV1.GET("", userController.List)
 			userV1.GET("/list", userController.List)
-			userV1.DELETE("", userController.Deleted)
+			userV1.DELETE("/:id", userController.Deleted)
 		}
 	}
 

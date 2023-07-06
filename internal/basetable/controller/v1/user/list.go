@@ -12,6 +12,7 @@ func (ctrl *Controller) List(c *gin.Context) {
 	list, err := ctrl.b.Users().List(c, &pageRequest)
 	if err != nil {
 		core.WriteResponse(c, err, nil)
+		return
 	}
 	core.WriteResponse(c, nil, list)
 }

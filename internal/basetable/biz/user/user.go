@@ -9,6 +9,7 @@ import (
 	"basetable.com/pkg/token"
 	"context"
 	"github.com/jinzhu/copier"
+	"gorm.io/gorm"
 	"regexp"
 )
 
@@ -17,6 +18,7 @@ type UserBiz interface {
 	Login(cxt context.Context, request *v1.UserLoginRequest) (*v1.LoginResponse, error)
 	List(cxt context.Context, request *api.PageRequest) (*[]model.UserM, error)
 	Deleted(cxt context.Context, userIds int) error
+	GetOne(cxt context.Context, id int) (*model.UserM, error)
 }
 
 var _ UserBiz = &userBiz{}
@@ -64,4 +66,10 @@ func (u *userBiz) List(c context.Context, request *api.PageRequest) (*[]model.Us
 
 func (u *userBiz) Deleted(c context.Context, userId int) error {
 	return u.ds.Users().Deleted(c, userId)
+}
+
+func (b *userBiz) GetOne(cxt context.Context, id int) (*model.UserM, error) {
+	userInput := &model.UserM{Model: gorm.Model{ID: uint(id)}}
+	user, err := b.ds.Users().GetOne(cxt, userInput)
+	return user, err
 }
