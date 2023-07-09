@@ -11,7 +11,7 @@ import (
 
 func (ctrl *Controller) Create(c *gin.Context) {
 	log.C(c).Infow("Create user function called")
-	var r v1.CreateUserRequest
+	var r v1.UserRequest
 	// 绑定参数
 	if err := c.ShouldBindJSON(&r); err != nil {
 		core.WriteResponse(c, errno.ErrBind, nil)
@@ -23,7 +23,7 @@ func (ctrl *Controller) Create(c *gin.Context) {
 		return
 	}
 	// 创建业务
-	if err := ctrl.b.Users().Create(c, &r); err != nil {
+	if err := ctrl.biz.Users().Create(c, &r); err != nil {
 		core.WriteResponse(c, err, nil)
 		return
 	}

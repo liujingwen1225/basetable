@@ -75,6 +75,6 @@ func initStore() error {
 	if err != nil {
 		return err
 	}
-	_ = store.NewStore(client)
+	store.SetDefault(client)
 	return nil
 }

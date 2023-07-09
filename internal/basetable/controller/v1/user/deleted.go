@@ -14,6 +14,6 @@ func (ctrl *Controller) Deleted(c *gin.Context) {
 		core.WriteResponse(c, errno.ErrUserNotFound, nil)
 		return
 	}
-	erro := ctrl.b.Users().Deleted(c, id)
+	erro := ctrl.biz.Users().Deleted(c, id)
 	core.WriteResponse(c, erro, nil)
 }

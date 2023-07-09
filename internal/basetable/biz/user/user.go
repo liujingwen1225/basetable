@@ -9,32 +9,34 @@ import (
 	"basetable.com/pkg/token"
 	"context"
 	"github.com/jinzhu/copier"
-	"gorm.io/gorm"
 	"regexp"
 )
 
-type UserBiz interface {
-	Create(cxt context.Context, request *v1.CreateUserRequest) error
+type IUserBiz interface {
+	Create(cxt context.Context, request *v1.UserRequest) error
 	Login(cxt context.Context, request *v1.UserLoginRequest) (*v1.LoginResponse, error)
-	List(cxt context.Context, request *api.PageRequest) (*[]model.UserM, error)
+	List(cxt context.Context, request *api.PageRequest) ([]*model.UserM, error)
 	Deleted(cxt context.Context, userIds int) error
 	GetOne(cxt context.Context, id int) (*model.UserM, error)
+	Update(cxt context.Context, request *v1.UserRequest) error
 }
 
-var _ UserBiz = &userBiz{}
+var (
+	_     IUserBiz = &User{}
+	query          = store.Q
+)
 
-type userBiz struct {
-	ds store.IStore
+type User struct {
 }
 
-func NewUserBiz(ds store.IStore) *userBiz {
-	return &userBiz{ds: ds}
+func NewUserBiz() *User {
+	return &User{}
 }
 
-func (u *userBiz) Create(cxt context.Context, request *v1.CreateUserRequest) error {
+func (u *User) Create(cxt context.Context, request *v1.UserRequest) error {
 	var userM model.UserM
 	_ = copier.Copy(&userM, request)
-	if err := u.ds.Users().Create(cxt, &userM); err != nil {
+	if err := query.UserM.Create(&userM); err != nil {
 		if match, _ := regexp.MatchString("Duplicate entry '.*' for key 'username'", err.Error()); match {
 			return errno.ErrUserAlreadyExist
 		}
@@ -43,9 +45,8 @@ func (u *userBiz) Create(cxt context.Context, request *v1.CreateUserRequest) err
 	return nil
 }
 
-func (u *userBiz) Login(cxt context.Context, request *v1.UserLoginRequest) (*v1.LoginResponse, error) {
-	userInput := &model.UserM{Username: request.Username}
-	user, err := u.ds.Users().GetOne(cxt, userInput)
+func (u *User) Login(cxt context.Context, request *v1.UserLoginRequest) (*v1.LoginResponse, error) {
+	user, err := query.UserM.Where(query.UserM.Username.Eq(request.Username)).First()
 	if err != nil {
 		return nil, err
 	}
@@ -59,17 +60,28 @@ func (u *userBiz) Login(cxt context.Context, request *v1.UserLoginRequest) (*v1.
 	return &v1.LoginResponse{Token: sign}, nil
 }
 
-func (u *userBiz) List(c context.Context, request *api.PageRequest) (*[]model.UserM, error) {
-	page, err := u.ds.Users().GetPage(c, request)
-	return page, err
+func (u *User) List(cxt context.Context, page *api.PageRequest) ([]*model.UserM, error) {
+	offset := (page.Page - 1) * page.PageSize
+	users, _, err := query.UserM.FindByPage(offset, page.PageSize)
+	return users, err
 }
 
-func (u *userBiz) Deleted(c context.Context, userId int) error {
-	return u.ds.Users().Deleted(c, userId)
+func (u *User) Deleted(cxt context.Context, userId int) error {
+	user := model.UserM{ID: userId}
+	_, err := query.UserM.Delete(&user)
+	return err
 }
 
-func (b *userBiz) GetOne(cxt context.Context, id int) (*model.UserM, error) {
-	userInput := &model.UserM{Model: gorm.Model{ID: uint(id)}}
-	user, err := b.ds.Users().GetOne(cxt, userInput)
+func (u *User) GetOne(cxt context.Context, id int) (*model.UserM, error) {
+	user, err := query.UserM.Where(query.UserM.ID.Eq(id)).First()
 	return user, err
+}
+
+func (u *User) Update(cxt context.Context, user *v1.UserRequest) error {
+	var userM model.UserM
+	_ = copier.Copy(&userM, user)
+	if _, err := query.UserM.Updates(&userM); err != nil {
+		return errno.ErrUserCreate
+	}
+	return nil
 }

@@ -8,8 +8,8 @@ import (
 
 func (ctrl *Controller) List(c *gin.Context) {
 	var pageRequest api.PageRequest
-	c.ShouldBindJSON(&pageRequest)
-	list, err := ctrl.b.Users().List(c, &pageRequest)
+	_ = c.ShouldBindJSON(&pageRequest)
+	list, err := ctrl.biz.Users().List(c, &pageRequest)
 	if err != nil {
 		core.WriteResponse(c, err, nil)
 		return

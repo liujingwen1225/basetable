@@ -1,6 +1,7 @@
 package v1
 
-type CreateUserRequest struct {
+type UserRequest struct {
+	ID       int    `json:"id"`
 	Username string `json:"username" valid:"required,alphanum,stringlength(1|255)"`
 	Password string `json:"password" valid:"required,stringlength(6|18)"`
 	Nickname string `json:"nickname" valid:"required,stringlength(1|255)"`
