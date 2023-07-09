@@ -2,7 +2,6 @@ package user
 
 import (
 	"basetable.com/internal/basetable/biz"
-	"basetable.com/internal/basetable/store"
 	"basetable.com/internal/pkg/core"
 	"basetable.com/internal/pkg/errno"
 	"github.com/gin-gonic/gin"
@@ -10,11 +9,11 @@ import (
 )
 
 type Controller struct {
-	b biz.IBiz
+	biz biz.IBiz
 }
 
-func New(ds store.IStore) *Controller {
-	return &Controller{b: biz.NewBiz(ds)}
+func New() *Controller {
+	return &Controller{biz: biz.New()}
 }
 
 func (ctrl *Controller) GetOne(c *gin.Context) {
@@ -24,7 +23,7 @@ func (ctrl *Controller) GetOne(c *gin.Context) {
 		core.WriteResponse(c, errno.ErrUserNotFound, nil)
 		return
 	}
-	user, err := ctrl.b.Users().GetOne(c, id)
+	user, err := ctrl.biz.Users().GetOne(c, id)
 	if err != nil {
 		core.WriteResponse(c, err, nil)
 		return

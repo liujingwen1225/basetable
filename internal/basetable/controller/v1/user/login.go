@@ -15,7 +15,7 @@ func (ctrl *Controller) Login(c *gin.Context) {
 		core.WriteResponse(c, errno.ErrBind, nil)
 		return
 	}
-	resp, err := ctrl.b.Users().Login(c, &r)
+	resp, err := ctrl.biz.Users().Login(c, &r)
 	if err != nil {
 		core.WriteResponse(c, err, nil)
 		return

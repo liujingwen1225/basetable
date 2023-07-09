@@ -2,23 +2,21 @@ package biz
 
 import (
 	"basetable.com/internal/basetable/biz/user"
-	"basetable.com/internal/basetable/store"
 )
 
 type IBiz interface {
-	Users() user.UserBiz
+	Users() user.IUserBiz
 }
 
-var _ IBiz = &biz{}
+var _ IBiz = &Biz{}
 
-type biz struct {
-	ds store.IStore
+type Biz struct {
 }
 
-func NewBiz(ds store.IStore) *biz {
-	return &biz{ds: ds}
+func New() *Biz {
+	return &Biz{}
 }
 
-func (b *biz) Users() user.UserBiz {
-	return user.NewUserBiz(b.ds)
+func (b *Biz) Users() user.IUserBiz {
+	return user.NewUserBiz()
 }
