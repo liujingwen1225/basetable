@@ -13,12 +13,12 @@ import (
 )
 
 type IUserBiz interface {
-	Create(cxt context.Context, request *v1.UserRequest) error
+	Create(cxt context.Context, request *v1.CreateUserRequest) error
 	Login(cxt context.Context, request *v1.UserLoginRequest) (*v1.LoginResponse, error)
 	List(cxt context.Context, request *api.PageRequest) ([]*model.UserM, error)
 	Deleted(cxt context.Context, userIds int) error
 	GetOne(cxt context.Context, id int) (*model.UserM, error)
-	Update(cxt context.Context, request *v1.UserRequest) error
+	Update(cxt context.Context, request *v1.UpdateUserRequest) error
 }
 
 var (
@@ -33,7 +33,7 @@ func NewUserBiz() *User {
 	return &User{}
 }
 
-func (u *User) Create(cxt context.Context, request *v1.UserRequest) error {
+func (u *User) Create(cxt context.Context, request *v1.CreateUserRequest) error {
 	var userM model.UserM
 	_ = copier.Copy(&userM, request)
 	if err := query.UserM.Create(&userM); err != nil {
@@ -77,7 +77,7 @@ func (u *User) GetOne(cxt context.Context, id int) (*model.UserM, error) {
 	return user, err
 }
 
-func (u *User) Update(cxt context.Context, user *v1.UserRequest) error {
+func (u *User) Update(cxt context.Context, user *v1.UpdateUserRequest) error {
 	var userM model.UserM
 	_ = copier.Copy(&userM, user)
 	if _, err := query.UserM.Updates(&userM); err != nil {

@@ -15,15 +15,15 @@ const TableNameUserM = "user"
 // UserM mapped from table <user>
 type UserM struct {
 	ID        int            `gorm:"column:id;type:bigint(20) unsigned;primaryKey;autoIncrement:true" json:"id"`
-	CreatedAt time.Time      `gorm:"column:created_at;type:datetime(3)" json:"created_at"`
-	UpdatedAt time.Time      `gorm:"column:updated_at;type:datetime(3)" json:"updated_at"`
+	CreatedAt *time.Time     `gorm:"column:created_at;type:datetime(3)" json:"created_at"`
+	UpdatedAt *time.Time     `gorm:"column:updated_at;type:datetime(3)" json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;type:datetime(3)" json:"deleted_at"`
 	Username  string         `gorm:"column:username;type:longtext;not null" json:"username"`
 	Password  string         `gorm:"column:password;type:longtext;not null" json:"password"`
-	Nickname  string         `gorm:"column:nickname;type:longtext" json:"nickname"`
-	Email     string         `gorm:"column:email;type:longtext" json:"email"`
-	Phone     string         `gorm:"column:phone;type:longtext" json:"phone"`
-	Gender    int            `gorm:"column:gender;type:tinyint(4)" json:"gender"`
+	Nickname  *string        `gorm:"column:nickname;type:longtext" json:"nickname"`
+	Email     *string        `gorm:"column:email;type:longtext" json:"email"`
+	Phone     *string        `gorm:"column:phone;type:longtext" json:"phone"`
+	Gender    *int           `gorm:"column:gender;type:tinyint(4)" json:"gender"`
 }
 
 // TableName UserM's table name

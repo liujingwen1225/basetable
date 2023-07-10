@@ -11,7 +11,7 @@ import (
 
 func (ctrl *Controller) Create(c *gin.Context) {
 	log.C(c).Infow("Create user function called")
-	var r v1.UserRequest
+	var r v1.CreateUserRequest
 	// 绑定参数
 	if err := c.ShouldBindJSON(&r); err != nil {
 		core.WriteResponse(c, errno.ErrBind, nil)

@@ -7,7 +7,7 @@ import (
 )
 
 func (ctrl *Controller) Update(c *gin.Context) {
-	var requst v1.UserRequest
+	var requst v1.UpdateUserRequest
 	_ = c.ShouldBindJSON(&requst)
 	if err := ctrl.biz.Users().Update(c, &requst); err != nil {
 		core.WriteResponse(c, err, nil)
