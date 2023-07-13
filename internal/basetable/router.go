@@ -1,6 +1,7 @@
 package basetable
 
 import (
+	"basetable.com/internal/basetable/controller/v1/collections"
 	"basetable.com/internal/basetable/controller/v1/user"
 	"basetable.com/internal/pkg/core"
 	"basetable.com/internal/pkg/errno"
@@ -37,6 +38,12 @@ func initRouter(g *gin.Engine) error {
 			userV1.PUT("", userController.Update)
 		}
 	}
-
+	collectionsCtrl := collections.New()
+	{
+		collectionsV1 := v1.Group("/collections")
+		{
+			collectionsV1.POST("", collectionsCtrl.Create)
+		}
+	}
 	return nil
 }

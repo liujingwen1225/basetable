@@ -75,6 +75,7 @@ func initStore() error {
 	if err != nil {
 		return err
 	}
+	client.Migrator().CreateTable()
 	store.SetDefault(client)
 	return nil
 }

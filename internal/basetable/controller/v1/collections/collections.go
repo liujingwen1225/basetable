@@ -6,7 +6,7 @@ import (
 	"basetable.com/internal/pkg/errno"
 	"basetable.com/internal/pkg/log"
 	v1 "basetable.com/pkg/api/basetable/v1"
-	"github.com/asaskevich/govalidator"
+	"basetable.com/pkg/util"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,7 +19,7 @@ func New() *Controller {
 }
 
 func (ctrl *Controller) Create(c *gin.Context) {
-	log.C(c).Infow("Create user function called")
+	log.C(c).Infow("Create collections function called")
 	var r v1.CreateCollectionsRequest
 	// 绑定参数
 	if err := c.ShouldBindJSON(&r); err != nil {
@@ -27,7 +27,7 @@ func (ctrl *Controller) Create(c *gin.Context) {
 		return
 	}
 	// 参数校验
-	if _, err := govalidator.ValidateStruct(r); err != nil {
+	if err := util.Validate.Struct(&r); err != nil {
 		core.WriteResponse(c, errno.ErrInvalidParameter.SetMessage(err.Error()), nil)
 		return
 	}

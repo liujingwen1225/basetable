@@ -14,18 +14,20 @@ const TableNameCollectionsFieldsM = "collections_fields"
 
 // CollectionsFieldsM mapped from table <collections_fields>
 type CollectionsFieldsM struct {
-	ID        int            `gorm:"column:id;type:bigint(20);primaryKey;autoIncrement:true" json:"id"`
-	Name      string         `gorm:"column:name;type:varchar(100);not null;comment:字段名称" json:"name"`
-	Type      string         `gorm:"column:type;type:varchar(100);not null;comment:字段类型" json:"type"`
-	Required  int            `gorm:"column:required;type:tinyint(1);not null;comment:是否必填" json:"required"`
-	System    int            `gorm:"column:system;type:tinyint(1);not null;comment:系统字段" json:"system"`
-	Options   *string        `gorm:"column:options;type:varchar(100);comment:额外参数" json:"options"`
-	CreatedAt *time.Time     `gorm:"column:created_at;type:datetime(3);comment:创建时间" json:"created_at"`
-	UpdatedAt *time.Time     `gorm:"column:updated_at;type:datetime(3);comment:更新时间" json:"updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;type:datetime(3);comment:删除时间" json:"deleted_at"`
+	ID            int            `gorm:"column:id;type:bigint(20);primaryKey;autoIncrement:true" json:"id"`
+	CollectionsID int            `gorm:"column:collections_id;type:bigint(20);not null;comment:集合id" json:"collections_id"`
+	Name          string         `gorm:"column:name;type:varchar(100);not null;comment:字段名称" json:"name"`
+	Type          string         `gorm:"column:type;type:varchar(100);not null;comment:字段类型" json:"type"`
+	Required      int            `gorm:"column:required;type:tinyint(1);not null;comment:是否必填" json:"required"`
+	System        int            `gorm:"column:system;type:tinyint(1);not null;comment:系统字段" json:"system"`
+	Options       string         `gorm:"column:options;type:varchar(100);comment:额外参数" json:"options"`
+	CreatedAt     time.Time      `gorm:"column:created_at;type:datetime(3);comment:创建时间" json:"created_at"`
+	UpdatedAt     time.Time      `gorm:"column:updated_at;type:datetime(3);comment:更新时间" json:"updated_at"`
+	DeletedAt     gorm.DeletedAt `gorm:"column:deleted_at;type:datetime(3);comment:删除时间" json:"deleted_at"`
 }
 
 // TableName CollectionsFieldsM's table name
 func (*CollectionsFieldsM) TableName() string {
+
 	return TableNameCollectionsFieldsM
 }
