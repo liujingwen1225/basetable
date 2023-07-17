@@ -35,7 +35,8 @@ func NewDbClient(opts *MySqlOptions) (*gorm.DB, error) {
 		logLevel = logger.LogLevel(opts.LogLevel)
 	}
 	db, err := gorm.Open(mysql.Open(opts.DSN()), &gorm.Config{
-		Logger: logger.Default.LogMode(logLevel),
+		Logger:                                   logger.Default.LogMode(logLevel),
+		DisableForeignKeyConstraintWhenMigrating: true,
 	})
 	if err != nil {
 		return nil, err
