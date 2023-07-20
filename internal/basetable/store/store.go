@@ -19,7 +19,6 @@ var (
 	Q                  = new(Query)
 	CollectionsFieldsM *collectionsFieldsM
 	CollectionsM       *collectionsM
-	PostM              *postM
 	UserM              *userM
 )
 
@@ -27,7 +26,6 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
 	CollectionsFieldsM = &Q.CollectionsFieldsM
 	CollectionsM = &Q.CollectionsM
-	PostM = &Q.PostM
 	UserM = &Q.UserM
 }
 
@@ -36,7 +34,6 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 		db:                 db,
 		CollectionsFieldsM: newCollectionsFieldsM(db, opts...),
 		CollectionsM:       newCollectionsM(db, opts...),
-		PostM:              newPostM(db, opts...),
 		UserM:              newUserM(db, opts...),
 	}
 }
@@ -46,7 +43,6 @@ type Query struct {
 
 	CollectionsFieldsM collectionsFieldsM
 	CollectionsM       collectionsM
-	PostM              postM
 	UserM              userM
 }
 
@@ -57,7 +53,6 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		db:                 db,
 		CollectionsFieldsM: q.CollectionsFieldsM.clone(db),
 		CollectionsM:       q.CollectionsM.clone(db),
-		PostM:              q.PostM.clone(db),
 		UserM:              q.UserM.clone(db),
 	}
 }
@@ -75,7 +70,6 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 		db:                 db,
 		CollectionsFieldsM: q.CollectionsFieldsM.replaceDB(db),
 		CollectionsM:       q.CollectionsM.replaceDB(db),
-		PostM:              q.PostM.replaceDB(db),
 		UserM:              q.UserM.replaceDB(db),
 	}
 }
@@ -83,7 +77,6 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 type queryCtx struct {
 	CollectionsFieldsM ICollectionsFieldsMDo
 	CollectionsM       ICollectionsMDo
-	PostM              IPostMDo
 	UserM              IUserMDo
 }
 
@@ -91,7 +84,6 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
 		CollectionsFieldsM: q.CollectionsFieldsM.WithContext(ctx),
 		CollectionsM:       q.CollectionsM.WithContext(ctx),
-		PostM:              q.PostM.WithContext(ctx),
 		UserM:              q.UserM.WithContext(ctx),
 	}
 }

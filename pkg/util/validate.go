@@ -8,3 +8,6 @@ func init() {
 	Validate = validator.New()
 	Validate.SetTagName("valid")
 }
+func Valid(s interface{}) error {
+	return Validate.Struct(s)
+}

@@ -6,6 +6,7 @@ package store
 
 import (
 	"context"
+	"strings"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -28,13 +29,18 @@ func newCollectionsM(db *gorm.DB, opts ...gen.DOOption) collectionsM {
 	tableName := _collectionsM.collectionsMDo.TableName()
 	_collectionsM.ALL = field.NewAsterisk(tableName)
 	_collectionsM.ID = field.NewInt(tableName, "id")
-	_collectionsM.Name = field.NewString(tableName, "name")
-	_collectionsM.Type = field.NewInt(tableName, "type")
-	_collectionsM.SourceTable = field.NewString(tableName, "source_table")
-	_collectionsM.Options = field.NewString(tableName, "options")
 	_collectionsM.CreatedAt = field.NewTime(tableName, "created_at")
 	_collectionsM.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_collectionsM.DeletedAt = field.NewField(tableName, "deleted_at")
+	_collectionsM.Name = field.NewString(tableName, "name")
+	_collectionsM.Type = field.NewString(tableName, "type")
+	_collectionsM.SourceTable = field.NewString(tableName, "source_table")
+	_collectionsM.Options = field.NewString(tableName, "options")
+	_collectionsM.Fields = collectionsMHasManyFields{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Fields", "model.CollectionsFieldsM"),
+	}
 
 	_collectionsM.fillFieldMap()
 
@@ -46,13 +52,14 @@ type collectionsM struct {
 
 	ALL         field.Asterisk
 	ID          field.Int
-	Name        field.String // 名称
-	Type        field.Int    // 类型
-	SourceTable field.String // 源表名称
-	Options     field.String // 额外参数
-	CreatedAt   field.Time   // 创建时间
-	UpdatedAt   field.Time   // 更新时间
-	DeletedAt   field.Field  // 删除时间
+	CreatedAt   field.Time
+	UpdatedAt   field.Time
+	DeletedAt   field.Field
+	Name        field.String
+	Type        field.String
+	SourceTable field.String
+	Options     field.String
+	Fields      collectionsMHasManyFields
 
 	fieldMap map[string]field.Expr
 }
@@ -70,13 +77,13 @@ func (c collectionsM) As(alias string) *collectionsM {
 func (c *collectionsM) updateTableName(table string) *collectionsM {
 	c.ALL = field.NewAsterisk(table)
 	c.ID = field.NewInt(table, "id")
-	c.Name = field.NewString(table, "name")
-	c.Type = field.NewInt(table, "type")
-	c.SourceTable = field.NewString(table, "source_table")
-	c.Options = field.NewString(table, "options")
 	c.CreatedAt = field.NewTime(table, "created_at")
 	c.UpdatedAt = field.NewTime(table, "updated_at")
 	c.DeletedAt = field.NewField(table, "deleted_at")
+	c.Name = field.NewString(table, "name")
+	c.Type = field.NewString(table, "type")
+	c.SourceTable = field.NewString(table, "source_table")
+	c.Options = field.NewString(table, "options")
 
 	c.fillFieldMap()
 
@@ -93,15 +100,16 @@ func (c *collectionsM) GetFieldByName(fieldName string) (field.OrderExpr, bool) 
 }
 
 func (c *collectionsM) fillFieldMap() {
-	c.fieldMap = make(map[string]field.Expr, 8)
+	c.fieldMap = make(map[string]field.Expr, 9)
 	c.fieldMap["id"] = c.ID
+	c.fieldMap["created_at"] = c.CreatedAt
+	c.fieldMap["updated_at"] = c.UpdatedAt
+	c.fieldMap["deleted_at"] = c.DeletedAt
 	c.fieldMap["name"] = c.Name
 	c.fieldMap["type"] = c.Type
 	c.fieldMap["source_table"] = c.SourceTable
 	c.fieldMap["options"] = c.Options
-	c.fieldMap["created_at"] = c.CreatedAt
-	c.fieldMap["updated_at"] = c.UpdatedAt
-	c.fieldMap["deleted_at"] = c.DeletedAt
+
 }
 
 func (c collectionsM) clone(db *gorm.DB) collectionsM {
@@ -112,6 +120,77 @@ func (c collectionsM) clone(db *gorm.DB) collectionsM {
 func (c collectionsM) replaceDB(db *gorm.DB) collectionsM {
 	c.collectionsMDo.ReplaceDB(db)
 	return c
+}
+
+type collectionsMHasManyFields struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a collectionsMHasManyFields) Where(conds ...field.Expr) *collectionsMHasManyFields {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a collectionsMHasManyFields) WithContext(ctx context.Context) *collectionsMHasManyFields {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a collectionsMHasManyFields) Session(session *gorm.Session) *collectionsMHasManyFields {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a collectionsMHasManyFields) Model(m *model.CollectionsM) *collectionsMHasManyFieldsTx {
+	return &collectionsMHasManyFieldsTx{a.db.Model(m).Association(a.Name())}
+}
+
+type collectionsMHasManyFieldsTx struct{ tx *gorm.Association }
+
+func (a collectionsMHasManyFieldsTx) Find() (result []*model.CollectionsFieldsM, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a collectionsMHasManyFieldsTx) Append(values ...*model.CollectionsFieldsM) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a collectionsMHasManyFieldsTx) Replace(values ...*model.CollectionsFieldsM) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a collectionsMHasManyFieldsTx) Delete(values ...*model.CollectionsFieldsM) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a collectionsMHasManyFieldsTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a collectionsMHasManyFieldsTx) Count() int64 {
+	return a.tx.Count()
 }
 
 type collectionsMDo struct{ gen.DO }
@@ -175,6 +254,23 @@ type ICollectionsMDo interface {
 	Returning(value interface{}, columns ...string) ICollectionsMDo
 	UnderlyingDB() *gorm.DB
 	schema.Tabler
+
+	CollectionNameByLowercase(name string) (result int, err error)
+}
+
+// SELECT count(1) FROM @@table WHERE LOWER(name)=@name limit 1
+func (c collectionsMDo) CollectionNameByLowercase(name string) (result int, err error) {
+	var params []interface{}
+
+	var generateSQL strings.Builder
+	params = append(params, name)
+	generateSQL.WriteString("SELECT count(1) FROM collections WHERE LOWER(name)=? limit 1 ")
+
+	var executeSQL *gorm.DB
+	executeSQL = c.UnderlyingDB().Raw(generateSQL.String(), params...).Take(&result) // ignore_security_alert
+	err = executeSQL.Error
+
+	return
 }
 
 func (c collectionsMDo) Debug() ICollectionsMDo {

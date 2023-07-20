@@ -43,6 +43,7 @@ func initRouter(g *gin.Engine) error {
 		collectionsV1 := v1.Group("/collections")
 		{
 			collectionsV1.POST("", collectionsCtrl.Create)
+			collectionsV1.GET("/list", collectionsCtrl.List)
 		}
 	}
 	return nil

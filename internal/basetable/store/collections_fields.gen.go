@@ -28,15 +28,15 @@ func newCollectionsFieldsM(db *gorm.DB, opts ...gen.DOOption) collectionsFieldsM
 	tableName := _collectionsFieldsM.collectionsFieldsMDo.TableName()
 	_collectionsFieldsM.ALL = field.NewAsterisk(tableName)
 	_collectionsFieldsM.ID = field.NewInt(tableName, "id")
-	_collectionsFieldsM.CollectionsID = field.NewInt(tableName, "collections_id")
-	_collectionsFieldsM.Name = field.NewString(tableName, "name")
-	_collectionsFieldsM.Type = field.NewString(tableName, "type")
-	_collectionsFieldsM.Required = field.NewInt(tableName, "required")
-	_collectionsFieldsM.System = field.NewInt(tableName, "system")
-	_collectionsFieldsM.Options = field.NewString(tableName, "options")
 	_collectionsFieldsM.CreatedAt = field.NewTime(tableName, "created_at")
 	_collectionsFieldsM.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_collectionsFieldsM.DeletedAt = field.NewField(tableName, "deleted_at")
+	_collectionsFieldsM.Name = field.NewString(tableName, "name")
+	_collectionsFieldsM.Type = field.NewString(tableName, "type")
+	_collectionsFieldsM.Required = field.NewBool(tableName, "required")
+	_collectionsFieldsM.System = field.NewBool(tableName, "system")
+	_collectionsFieldsM.Options = field.NewString(tableName, "options")
+	_collectionsFieldsM.CollectionsID = field.NewInt(tableName, "collections_id")
 
 	_collectionsFieldsM.fillFieldMap()
 
@@ -48,15 +48,15 @@ type collectionsFieldsM struct {
 
 	ALL           field.Asterisk
 	ID            field.Int
-	CollectionsID field.Int    // 集合id
-	Name          field.String // 字段名称
-	Type          field.String // 字段类型
-	Required      field.Int    // 是否必填
-	System        field.Int    // 系统字段
-	Options       field.String // 额外参数
-	CreatedAt     field.Time   // 创建时间
-	UpdatedAt     field.Time   // 更新时间
-	DeletedAt     field.Field  // 删除时间
+	CreatedAt     field.Time
+	UpdatedAt     field.Time
+	DeletedAt     field.Field
+	Name          field.String
+	Type          field.String
+	Required      field.Bool
+	System        field.Bool
+	Options       field.String
+	CollectionsID field.Int
 
 	fieldMap map[string]field.Expr
 }
@@ -74,15 +74,15 @@ func (c collectionsFieldsM) As(alias string) *collectionsFieldsM {
 func (c *collectionsFieldsM) updateTableName(table string) *collectionsFieldsM {
 	c.ALL = field.NewAsterisk(table)
 	c.ID = field.NewInt(table, "id")
-	c.CollectionsID = field.NewInt(table, "collections_id")
-	c.Name = field.NewString(table, "name")
-	c.Type = field.NewString(table, "type")
-	c.Required = field.NewInt(table, "required")
-	c.System = field.NewInt(table, "system")
-	c.Options = field.NewString(table, "options")
 	c.CreatedAt = field.NewTime(table, "created_at")
 	c.UpdatedAt = field.NewTime(table, "updated_at")
 	c.DeletedAt = field.NewField(table, "deleted_at")
+	c.Name = field.NewString(table, "name")
+	c.Type = field.NewString(table, "type")
+	c.Required = field.NewBool(table, "required")
+	c.System = field.NewBool(table, "system")
+	c.Options = field.NewString(table, "options")
+	c.CollectionsID = field.NewInt(table, "collections_id")
 
 	c.fillFieldMap()
 
@@ -101,15 +101,15 @@ func (c *collectionsFieldsM) GetFieldByName(fieldName string) (field.OrderExpr, 
 func (c *collectionsFieldsM) fillFieldMap() {
 	c.fieldMap = make(map[string]field.Expr, 10)
 	c.fieldMap["id"] = c.ID
-	c.fieldMap["collections_id"] = c.CollectionsID
+	c.fieldMap["created_at"] = c.CreatedAt
+	c.fieldMap["updated_at"] = c.UpdatedAt
+	c.fieldMap["deleted_at"] = c.DeletedAt
 	c.fieldMap["name"] = c.Name
 	c.fieldMap["type"] = c.Type
 	c.fieldMap["required"] = c.Required
 	c.fieldMap["system"] = c.System
 	c.fieldMap["options"] = c.Options
-	c.fieldMap["created_at"] = c.CreatedAt
-	c.fieldMap["updated_at"] = c.UpdatedAt
-	c.fieldMap["deleted_at"] = c.DeletedAt
+	c.fieldMap["collections_id"] = c.CollectionsID
 }
 
 func (c collectionsFieldsM) clone(db *gorm.DB) collectionsFieldsM {

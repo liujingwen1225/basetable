@@ -67,7 +67,7 @@ func (u *User) List(cxt context.Context, page *api.PageRequest) ([]*model.UserM,
 }
 
 func (u *User) Deleted(cxt context.Context, userId int) error {
-	user := model.UserM{ID: userId}
+	user := model.UserM{BaseModelM: model.BaseModelM{ID: userId}}
 	_, err := query.UserM.Delete(&user)
 	return err
 }

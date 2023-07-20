@@ -3,6 +3,7 @@ package basetable
 import (
 	"basetable.com/internal/basetable/store"
 	"basetable.com/internal/pkg/log"
+	"basetable.com/internal/pkg/model"
 	"basetable.com/pkg/db"
 	"github.com/spf13/viper"
 	"strings"
@@ -75,7 +76,12 @@ func initStore() error {
 	if err != nil {
 		return err
 	}
-	client.Migrator().CreateTable()
+	allModel := []interface{}{
+		model.UserM{},
+		model.CollectionsM{},
+		model.CollectionsFieldsM{},
+	}
+	_ = client.AutoMigrate(allModel...)
 	store.SetDefault(client)
 	return nil
 }
