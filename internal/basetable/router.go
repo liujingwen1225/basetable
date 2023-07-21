@@ -44,6 +44,8 @@ func initRouter(g *gin.Engine) error {
 		{
 			collectionsV1.POST("", collectionsCtrl.Create)
 			collectionsV1.GET("/list", collectionsCtrl.List)
+			collectionsV1.PUT("", collectionsCtrl.Update)
+			collectionsV1.DELETE("/:id", collectionsCtrl.Delete)
 		}
 	}
 	return nil

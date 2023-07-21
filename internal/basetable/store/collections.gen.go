@@ -255,19 +255,19 @@ type ICollectionsMDo interface {
 	UnderlyingDB() *gorm.DB
 	schema.Tabler
 
-	CollectionNameByLowercase(name string) (result int, err error)
+	CollectionNameByLowercase(name string) (result []*model.CollectionsM, err error)
 }
 
-// SELECT count(1) FROM @@table WHERE LOWER(name)=@name limit 1
-func (c collectionsMDo) CollectionNameByLowercase(name string) (result int, err error) {
+// SELECT * FROM @@table WHERE LOWER(name)=@name
+func (c collectionsMDo) CollectionNameByLowercase(name string) (result []*model.CollectionsM, err error) {
 	var params []interface{}
 
 	var generateSQL strings.Builder
 	params = append(params, name)
-	generateSQL.WriteString("SELECT count(1) FROM collections WHERE LOWER(name)=? limit 1 ")
+	generateSQL.WriteString("SELECT * FROM collections WHERE LOWER(name)=? ")
 
 	var executeSQL *gorm.DB
-	executeSQL = c.UnderlyingDB().Raw(generateSQL.String(), params...).Take(&result) // ignore_security_alert
+	executeSQL = c.UnderlyingDB().Raw(generateSQL.String(), params...).Find(&result) // ignore_security_alert
 	err = executeSQL.Error
 
 	return

@@ -13,9 +13,11 @@ var (
 
 	// ErrCollectionsCreate 集合创建失败.
 	ErrCollectionsCreate = &Errno{HTTP: 400, Code: "FailedOperation.ErrCollectionsCreate", Message: "Collections create error."}
+	ErrCollectionsUpdate = &Errno{HTTP: 400, Code: "FailedOperation.ErrCollectionsUpdate", Message: "Collections update error."}
 	ErrCollectionsExist  = &Errno{HTTP: 400, Code: "FailedOperation.ErrCollectionsExist", Message: "Collection name already exist (case insensitive)."}
 
 	ErrCollectionsTypeNotFound = &Errno{HTTP: 400, Code: "FailedOperation.ErrCollectionsTypeNotFound", Message: "Collections type not found."}
 
-	ErrCollectionsFieldsTypeNotFound = &Errno{HTTP: 400, Code: "FailedOperation.ErrCollectionsFieldsTypeNotFound", Message: "Collections fields type not found."}
+	ErrCollectionsFieldsTypeNotFound = &Errno{HTTP: 400, Code: "FailedOperation.ErrCollectionsFieldsTypeNotFound", Message: "Collections field type not found."}
+	ErrCollectionsFieldNameDuplicate = &Errno{HTTP: 400, Code: "FailedOperation.ErrCollectionsFieldNameDuplicate", Message: "Collections field name duplicate."}
 )

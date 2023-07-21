@@ -31,8 +31,8 @@ func main() {
 		"int":       func(detailType gorm.ColumnType) (dataType string) { return "int" },
 	}
 	type Querier interface {
-		// SELECT count(1) FROM @@table WHERE LOWER(name)=@name limit 1
-		CollectionNameByLowercase(name string) (int, error)
+		// SELECT * FROM @@table WHERE LOWER(name)=@name
+		CollectionNameByLowercase(name string) ([]*gen.T, error)
 	}
 
 	// 类型映射 要先于`ApplyBasic`执行
