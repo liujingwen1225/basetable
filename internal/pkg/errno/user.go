@@ -9,4 +9,11 @@ var (
 
 	// ErrPasswordIncorrect 表示密码不正确.
 	ErrPasswordIncorrect = &Errno{HTTP: 401, Code: "InvalidParameter.PasswordIncorrect", Message: "Password is incorrect."}
+
+	// ErrUserDeleted
+	ErrUserDeleted = &Errno{HTTP: 400, Code: "InvalidParameter.ErrUserDeleted", Message: "User delete error."}
+	// ErrUserList
+	ErrUserList = &Errno{HTTP: 400, Code: "InvalidParameter.ErrUserList", Message: "User list find error."}
+
+	ErrUserIdType = &Errno{HTTP: 400, Code: "InvalidParameter.ErrUserIdType", Message: "User id  was number."}
 )

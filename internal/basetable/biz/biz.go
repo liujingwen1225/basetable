@@ -1,12 +1,11 @@
 package biz
 
 import (
-	"basetable.com/internal/basetable/biz/user"
 	"basetable.com/internal/basetable/store"
 )
 
 type IBiz interface {
-	Users() user.UserBiz
+	Users() UserBiz
 }
 
 var _ IBiz = &biz{}
@@ -19,6 +18,6 @@ func NewBiz(ds store.IStore) *biz {
 	return &biz{ds: ds}
 }
 
-func (b *biz) Users() user.UserBiz {
-	return user.NewUserBiz(b.ds)
+func (b *biz) Users() UserBiz {
+	return NewUserBiz(b.ds)
 }

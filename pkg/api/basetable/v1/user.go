@@ -1,6 +1,8 @@
 package v1
 
-type CreateUserRequest struct {
+import "time"
+
+type UserRequest struct {
 	Username string `json:"username" valid:"required,alphanum,stringlength(1|255)"`
 	Password string `json:"password" valid:"required,stringlength(6|18)"`
 	Nickname string `json:"nickname" valid:"required,stringlength(1|255)"`
@@ -20,4 +22,29 @@ type LoginResponse struct {
 type ChangePasswordRequest struct {
 	OldPassword string `json:"oldPassword" valid:"required,stringlength(6|18)"`
 	NewPassword string `json:"newPassword" valid:"required,stringlength(6|18)"`
+}
+
+type DeletedUserRequest struct {
+	Ids []int `json:"ids"`
+}
+
+type ListUserRequest struct {
+	UserRequest
+	Page     int `json:"page" valid:"number"`
+	PageSize int `json:"pageSize" valid:"number"`
+}
+
+type UserResponse struct {
+	ID        uint      `json:"id"`
+	Username  string    `json:"username" `
+	Nickname  string    `json:"nickname"`
+	Email     string    `json:"email"`
+	Phone     string    `json:"phone"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type UpdateUserRequest struct {
+	ID uint `json:"id" valid:"required,number"`
+	UserRequest
 }

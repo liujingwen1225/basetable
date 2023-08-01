@@ -1,7 +1,7 @@
 package basetable
 
 import (
-	"basetable.com/internal/basetable/controller/v1/user"
+	"basetable.com/internal/basetable/controller/v1"
 	"basetable.com/internal/basetable/store"
 	"basetable.com/internal/pkg/core"
 	"basetable.com/internal/pkg/errno"
@@ -22,7 +22,7 @@ func initRouter(g *gin.Engine) error {
 		core.WriteResponse(c, nil, map[string]string{"status": "ok"})
 	})
 
-	userController := user.New(store.S)
+	userController := v1.New(store.S)
 	g.POST("/auth/login", userController.Login)
 
 	v1 := g.Group("/v1")
@@ -31,6 +31,10 @@ func initRouter(g *gin.Engine) error {
 		userV1 := v1.Group("/users")
 		{
 			userV1.POST("", userController.Create)
+			userV1.GET("/:id", userController.GetById)
+			userV1.PUT("", userController.Update)
+			userV1.DELETE("", userController.Deleted)
+			userV1.GET("/list", userController.List)
 		}
 	}
 

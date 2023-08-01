@@ -1,6 +1,7 @@
 package store
 
 import (
+	"basetable.com/internal/pkg/errno"
 	"basetable.com/internal/pkg/model"
 	"context"
 	"gorm.io/gorm"
@@ -8,14 +9,50 @@ import (
 
 type UserStore interface {
 	Create(cxt context.Context, user *model.UserM) error
-	Get(cxt context.Context, user *model.UserM) (*model.UserM, error)
-	Update(cxt context.Context, user *model.UserM) error
+	List(cxt context.Context, user *model.UserM) ([]*model.UserM, error)
+	GetById(cxt context.Context, id int) (*model.UserM, error)
+	GetByUserName(cxt context.Context, name string) (*model.UserM, error)
+	Update(cxt context.Context, user *model.UserM) (*model.UserM, error)
+	Delete(cxt context.Context, ids []int) error
 }
 
 var _ UserStore = &users{}
 
 type users struct {
 	db *gorm.DB
+}
+
+func (u *users) GetByUserName(cxt context.Context, name string) (*model.UserM, error) {
+	var res model.UserM
+	if err := u.db.Where("username = ?", name).First(&res).Error; err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (u *users) List(cxt context.Context, user *model.UserM) ([]*model.UserM, error) {
+	var res []*model.UserM
+	query := u.db
+	if user.Username != "" {
+		query = query.Where("username LIKE ?", "%"+user.Username+"%")
+	}
+	if user.Nickname != "" {
+		query = query.Where("nickname LIKE ?", "%"+user.Nickname+"%")
+	}
+	tx := query.Find(&res)
+
+	if tx.Error != nil {
+		return nil, errno.ErrUserNotFound
+	}
+	return res, nil
+}
+
+func (u *users) GetById(cxt context.Context, id int) (*model.UserM, error) {
+	var userOutput model.UserM
+	if err := u.db.Where("id = ?", id).First(&userOutput).Error; err != nil {
+		return nil, err
+	}
+	return &userOutput, nil
 }
 
 func newUserStore(db *gorm.DB) *users {
@@ -26,14 +63,9 @@ func (u *users) Create(cxt context.Context, user *model.UserM) error {
 	return u.db.Create(&user).Error
 }
 
-func (u *users) Get(cxt context.Context, userInput *model.UserM) (*model.UserM, error) {
-	var userOutput model.UserM
-	if err := u.db.Where(&userInput).First(&userOutput).Error; err != nil {
-		return nil, err
-	}
-	return &userOutput, nil
+func (u *users) Update(cxt context.Context, user *model.UserM) (*model.UserM, error) {
+	return user, u.db.Omit("password", "created_at").Save(&user).Error
 }
-
-func (u *users) Update(cxt context.Context, user *model.UserM) error {
-	return u.db.Save(&user).Error
+func (u *users) Delete(cxt context.Context, ids []int) error {
+	return u.db.Delete(&model.UserM{}, ids).Error
 }
