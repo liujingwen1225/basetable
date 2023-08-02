@@ -46,8 +46,11 @@ func (u *userBiz) GetById(cxt context.Context, id int) (*v1.UserResponse, error)
 
 func (u *userBiz) List(cxt context.Context, request *v1.ListUserRequest) ([]*v1.UserResponse, error) {
 	var userM model.UserM
+	var pagination v1.Pagination
 	_ = copier.Copy(&userM, request)
-	list, err := u.ds.Users().List(cxt, &userM)
+	_ = copier.Copy(&pagination, request)
+
+	list, err := u.ds.Users().List(cxt, &userM, pagination)
 	if err != nil {
 		return nil, err
 	}
