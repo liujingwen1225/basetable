@@ -3,13 +3,14 @@ package store
 import (
 	"basetable.com/internal/pkg/errno"
 	"basetable.com/internal/pkg/model"
+	v1 "basetable.com/pkg/api/basetable/v1"
 	"context"
 	"gorm.io/gorm"
 )
 
 type UserStore interface {
 	Create(cxt context.Context, user *model.UserM) error
-	List(cxt context.Context, user *model.UserM) ([]*model.UserM, error)
+	List(cxt context.Context, user *model.UserM, pagination v1.Pagination) ([]*model.UserM, error)
 	GetById(cxt context.Context, id int) (*model.UserM, error)
 	GetByUserName(cxt context.Context, name string) (*model.UserM, error)
 	Update(cxt context.Context, user *model.UserM) (*model.UserM, error)
@@ -30,7 +31,7 @@ func (u *users) GetByUserName(cxt context.Context, name string) (*model.UserM, e
 	return &res, nil
 }
 
-func (u *users) List(cxt context.Context, user *model.UserM) ([]*model.UserM, error) {
+func (u *users) List(cxt context.Context, user *model.UserM, pagination v1.Pagination) ([]*model.UserM, error) {
 	var res []*model.UserM
 	query := u.db
 	if user.Username != "" {
@@ -39,7 +40,8 @@ func (u *users) List(cxt context.Context, user *model.UserM) ([]*model.UserM, er
 	if user.Nickname != "" {
 		query = query.Where("nickname LIKE ?", "%"+user.Nickname+"%")
 	}
-	tx := query.Find(&res)
+	offset, limit := pagination.GetPage()
+	tx := query.Offset(offset).Limit(limit).Find(&res)
 
 	if tx.Error != nil {
 		return nil, errno.ErrUserNotFound
