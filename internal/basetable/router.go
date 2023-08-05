@@ -1,8 +1,7 @@
 package basetable
 
 import (
-	"basetable.com/internal/basetable/controller/v1"
-	"basetable.com/internal/basetable/store"
+	"basetable.com/internal/basetable/api/v1"
 	"basetable.com/internal/pkg/core"
 	"basetable.com/internal/pkg/errno"
 	"basetable.com/internal/pkg/log"
@@ -22,7 +21,7 @@ func initRouter(g *gin.Engine) error {
 		core.WriteResponse(c, nil, map[string]string{"status": "ok"})
 	})
 
-	userController := v1.New(store.S)
+	userController := v1.ApiGroupApp.UserApi
 	g.POST("/auth/login", userController.Login)
 
 	v1 := g.Group("/v1")

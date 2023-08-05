@@ -29,9 +29,8 @@ type DeletedUserRequest struct {
 }
 
 type ListUserRequest struct {
+	Pagination
 	UserRequest
-	Page     int `json:"page" valid:"number"`
-	PageSize int `json:"pageSize" valid:"number"`
 }
 
 type UserResponse struct {

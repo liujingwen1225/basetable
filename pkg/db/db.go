@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+var DB *gorm.DB
+
 type MySqlOptions struct {
 	Host                  string
 	Username              string
@@ -54,6 +56,6 @@ func NewDbClient(opts *MySqlOptions) (*gorm.DB, error) {
 
 	// SetMaxIdleConns 设置空闲连接池的最大连接数
 	sqlDB.SetMaxIdleConns(opts.MaxIdleConnections)
-
+	DB = db
 	return db, nil
 }

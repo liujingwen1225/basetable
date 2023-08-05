@@ -22,6 +22,7 @@ type collections struct {
 }
 
 func (c *collections) Create(cxt context.Context, collections *model.CollectionsM) error {
+	c.db.Begin()
 	return c.db.Save(&collections).Error
 }
 
